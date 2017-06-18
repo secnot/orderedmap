@@ -525,7 +525,17 @@ func TestIterator(t *testing.T) {
 		t.Error("Iterated an empty map")
 	}
 
+	// Try to use Next() one more time after the iteration has finished
+	om = NewOrderedMap()
+	om.Set(1, 2)
+	iter = om.Iter()
+	for _, _, ok := iter.Next(); ok; _, _, ok = iter.Next() {
+	}
 
+	if _, _, ok := iter.Next(); ok {
+		t.Error("Next() returned a value after iterationg was finished")
+	}
+	
 }
 
 
