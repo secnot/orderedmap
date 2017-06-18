@@ -7,6 +7,8 @@ type OrderedMap struct {
 	root *node	// Point to the newest node
 }
 
+
+// Create an empty OrderedMap
 func NewOrderedMap() *OrderedMap{
 	root := newNode(nil, nil, nil, nil) // sentinel Node
 	root.Next, root.Prev = root, root
@@ -18,7 +20,14 @@ func NewOrderedMap() *OrderedMap{
 	return om
 }
 
+// Len computes the number of elements in an OrderedMap
+func (om *OrderedMap) Len() int {
+	return len(om.table)
+}
 
+
+// Sets the key value, if the key overwrites an existing entry, the original
+// insertion position is left unchanged, otherwise the key is inserted at the end.
 func (om *OrderedMap) Set(key interface{}, value interface{}) {
 	if node, ok := om.table[key]; !ok {
 		// New Node
@@ -33,7 +42,7 @@ func (om *OrderedMap) Set(key interface{}, value interface{}) {
 	}
 }
 
-
+// Get the value of an existing key, leaving the map unchanged
 func (om *OrderedMap) Get(key interface{}) (interface{}, bool) {
 	if node, ok := om.table[key]; !ok {
 		return nil, false
@@ -42,8 +51,7 @@ func (om *OrderedMap) Get(key interface{}) (interface{}, bool) {
 	}
 }
 
-
-// Return key/value/ok for the last node
+// Get the key and value for the last element added, leaving the map unchanged
 func (om *OrderedMap) GetLast()(interface{}, interface{}, bool) {
 	if len(om.table) == 0 {
 		return nil, nil, false
@@ -52,7 +60,7 @@ func (om *OrderedMap) GetLast()(interface{}, interface{}, bool) {
 	return node.Key, node.Value, true
 }
 
-// Return key/value/ok for the first node
+// Get the key value for the beginning element, leaving the map unchanged
 func (om *OrderedMap) GetFirst()(interface{}, interface{}, bool) {
 	if len(om.table) == 0 {
 		return nil, nil, false
@@ -63,64 +71,48 @@ func (om *OrderedMap) GetFirst()(interface{}, interface{}, bool) {
 }
 
 
-
+// Delete a key:value pair from the map.
 func (om *OrderedMap) Delete(key interface{}) {
 	if node, ok := om.table[key]; ok{
 		node.Next.Prev = node.Prev
 		node.Prev.Next = node.Next
-		
-		// TODO: Commented while testing
-		//node.Next, node.Prev = om.root, om.root //Stop iteration gracefully
 		
 		delete(om.table, key)
 	}
 }
 
 
-func (om *OrderedMap) Len() int {
-	return len(om.table)
-}
-
-
-// Pop newest or oldest element from the OrderedMap
+// Pop and return key:value for the newest or oldest element on the OrderedMap
 // returns key, value, ok
 // last = false -> FIFO
 // last = true  -> LIFO
 func (om *OrderedMap) Pop(last bool) (key interface{}, value interface{}, ok bool){
-
-	var anode *node
-
-	// Empty OrderedMap
-	if om.root == om.root.Next {
-		return nil, nil, false
-	}
-
 	if last {
-		// Pop newest node
-		anode = om.root.Prev
+		key, value, ok = om.GetLast()
 	} else {
-		// Pop oldest node
-		anode = om.root.Next
+		key, value, ok = om.GetFirst()
 	}
 	
-	anode.Next.Prev = anode.Prev
-	anode.Prev.Next = anode.Next
-	anode.Next, anode.Prev = om.root, om.root //Stop iteration gracefully
-	delete(om.table, anode.Key)
-
-	return anode.Key, anode.Value, true
+	if ok {
+		om.Delete(key)
+	}
+	return
 }
 
+
+// Shortcut to Pop the last element
 func (om *OrderedMap) PopLast()(key interface{}, value interface{}, ok bool){
 	return om.Pop(true)
 }
 
+
+// Shortcut to Pop the first element
 func (om *OrderedMap) PopFirst()(key interface{}, value interface{}, ok bool){
 	return om.Pop(false)
 }
 
 
-// Move an existing key to either end of an OrderedMap
+// Move an existing key to either the end of the OrderedMap
 func (om *OrderedMap) Move(key interface{}, last bool) bool{
 	
 	var moved *node
@@ -151,25 +143,45 @@ func (om *OrderedMap) Move(key interface{}, last bool) bool{
 	return true
 }
 
+
+// Shortcut to Move an element to the end
 func (om *OrderedMap) MoveLast(key interface{}) bool{
 	return om.Move(key, true)
 }
 
+// Shortcut to Move an element to the beginning
 func (om *OrderedMap) MoveFirst(key interface{}) bool{
 	return om.Move(key, false)
 }
 
 
-
+// OrderedMap Iterator
 type MapIterator struct {
 	curr *node
 	root *node
 	reverse bool
 }
 
+// Create a map iterator
+func (om *OrderedMap) Iter() *MapIterator{
+	return &MapIterator{
+		curr: om.root, 
+		root: om.root,
+		reverse: false,
+	}
+}
 
-// Next element of the iteration
-// return key, value, ok
+// Create a reverse ordered map iterator
+func (om *OrderedMap) IterReverse() *MapIterator{
+	return &MapIterator{
+		curr: om.root, 
+		root: om.root,
+		reverse: true,
+	}
+}
+
+
+// Return next key:value pair
 func (mi *MapIterator) Next() (interface {}, interface {}, bool) {
 
 	// Already finished
@@ -193,22 +205,7 @@ func (mi *MapIterator) Next() (interface {}, interface {}, bool) {
 }
 
 
-func (om *OrderedMap) Iter() *MapIterator{
-	return &MapIterator{
-		curr: om.root, 
-		root: om.root,
-		reverse: false,
-	}
-}
-
-func (om *OrderedMap) IterReverse() *MapIterator{
-	return &MapIterator{
-		curr: om.root, 
-		root: om.root,
-		reverse: true,
-	}
-}
-
+// Stringer interface
 func (om *OrderedMap) String() string {
 	buffer := make([]string, om.Len())
 
