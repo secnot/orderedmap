@@ -298,7 +298,7 @@ func TestPopFirst(t *testing.T) {
 	om.Set("one", 1)
 	om.Set("two", 2)
 	
-	if key, value, ok := om.PopLast(); key!= "two" || value!=2||!ok {
+	if key, value, ok := om.PopFirst(); key!= "one" || value!=1||!ok {
 		t.Error("PopFirst didn't pop first element")
 	}
 }
@@ -1085,5 +1085,23 @@ func TestIterDelteInsert(t *testing.T){
 	}
 
 	//TODO: Test reverse iteration
+}
+
+
+
+// Test string interface
+func TestString(t *testing.T) {
+
+	om := NewOrderedMap()
+
+	if fmt.Sprintf("%v", om) != "OrderedMap[]" {
+		t.Error("Invalid empty OrderedMap representation")
+	}
+
+	om.Set(1, 2)
+	if fmt.Sprintf("%v", om) != "OrderedMap[1:2, ]" {
+		t.Error("Invalid OrderedMap representation")
+	}
+
 }
 
