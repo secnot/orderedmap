@@ -33,7 +33,7 @@ import (
 
 func main() {
 	// Create
-	om := NewOrderedMap()
+	om := orderedmap.NewOrderedMap()
 
 	// Insert
 	om.Set("John Smith", 44)
@@ -77,7 +77,7 @@ import (
 
 func main() {
 
-	om := NewOrderedMap()
+	om := orderedmap.NewOrderedMap()
 
 	om.Set("John Smith", 44)
 	om.Set("Laura Paro", 39)
@@ -173,11 +173,11 @@ func main() {
 
 Lastly an OrderedMap can also be handled as a queue or a stack with:
 
-**GetLast** | **GetFirst**
+* **GetLast** | **GetFirst** : key:value for both ends of the queue or stack, without modifying the map
+* **PopLast**: Pop the value at the top of the Stack.
+* **PopFirst**: Pop next queue element
+* **MoveLast** | **MoveFirst**: Move elements to either end of the queue or stack
 
-**Pop** | **PopLast** | **PopFirst**
-
-**Move** | **MoveLast** | **MoveFirst**
 
 ## Documentation
 
