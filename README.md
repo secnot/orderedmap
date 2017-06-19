@@ -168,18 +168,13 @@ func main() {
 
 ```
 
-Lastly an OrderedMap can also act as queue or a stack with:
+Lastly an OrderedMap can also be handled as queue or a stack with:
 
-**GetLast**
-**GetFirst**
+**GetLast** | **GetFirst**
 
-**Pop**
-**PopLast**
-**PopFirst**
+**Pop** | **PopLast** | **PopFirst**
 
-**Move**
-**MoveLast**
-**MoveFirst**
+**Move** | **MoveLast** | **MoveFirst**
 
 ## Documentation
 
