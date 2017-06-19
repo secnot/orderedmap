@@ -1,12 +1,11 @@
 package orderedmap
 
-
 // An element of an OrderedDict, forms a linked list ordered by insertion time
 type node struct {
 	Key   interface{}
 	Value interface{}
-	Next *node
-	Prev *node
+	Next  *node
+	Prev  *node
 }
 
 // Create new node
