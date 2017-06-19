@@ -212,7 +212,7 @@ the original insertion position is left unchanged, otherwise the key is
 inserted at the end.
 
 
-## func (om *OrderedMap) String 
+#### func (om *OrderedMap) String 
 
 ```go
 func (om *OrderedMap) String() string
