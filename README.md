@@ -24,57 +24,162 @@ import "github.com/secnot/orderedmap"
 Basic operations
 
 ```go
-// Create
-om := NewOrderedMap()
+package main
 
-// Insert
-om.Set("John Smith", 44)
-om.Set("Laura Paro", 39)
-om.Set("Alison Rogers", 52)
+import (
+	"github.com/secnot/orderedmap"
+	"fmt"
+)
 
-// Update
-om.Set("Alison Rogers", 51)
+func main() {
+	// Create
+	om := NewOrderedMap()
 
-// Get 
-if age, ok := om.Get("John Smith"); ok {
-	fmt.Printf("John Smith age: %v", age)
+	// Insert
+	om.Set("John Smith", 44)
+	om.Set("Laura Paro", 39)
+	om.Set("Alison Rogers", 52)
+
+	// Update
+	om.Set("Alison Rogers", 51)
+
+	// Get 
+	if age, ok := om.Get("John Smith"); ok {
+		fmt.Printf("John Smith age: %v", age)
+	}
+
+	// Get the last key added
+	if name, age, ok := om.GetLast() {
+		fmt.Printf("%v age: %v\n", name, age)
+	}
+
+	// Delete
+	om.Delete("John Smith")
 }
-
-// Get the last key added
-if name, age, ok := om.GetLast() {
-	fmt.Printf("%v age: %v\n", name, age)
-}
-
-// Delete
-om.Delete("John Smith")
-```
-
-Iterate over the Map elements in insertion order
-
-```go
-om := NewOrderedMap()
-
-om.Set("John Smith", 44)
-om.Set("Laura Paro", 39)
-om.Set("Alison Rogers", 52)
-
-// Iterate
-iter := om.Iter()
-for key, value, ok := iter.Next(); ok; key, value, ok := iter.Next() {
-	fmt.Printf("%v: %v", key, value)
-}
-
-// > Alison Rogers: 52
-// > Laura Paro: 39
-// > John Smith: 44
 ```
 
 Pop the last key from the map
 
 ```go
 key, value, ok := om.PopLast()
-// > Alison, 52, true
+// > Alison Rogers, 52, true
 ```
+
+Iterate over the Map elements in insertion order
+
+```go
+package main
+
+import (
+	"github.com/secnot/orderedmap"
+	"fmt"
+)
+
+func main() {
+
+	om := NewOrderedMap()
+
+	om.Set("John Smith", 44)
+	om.Set("Laura Paro", 39)
+	om.Set("Alison Rogers", 52)
+
+	// Iterate
+	iter := om.Iter()
+	for key, value, ok := iter.Next(); ok; key, value, ok = iter.Next() {
+		fmt.Printf("%v: %v", key, value)
+	}
+
+	// > John Smith: 44
+	// > Laura Paro: 39
+	// > Alison Rogers: 52
+}
+```
+
+While iterating over an OrderedMap only three methods can be called safely,
+**Get**, **Set**, and **Delete**, with some limitations/gotchas for the last
+two.
+
+**Set** can update the value of any existing key without problems, but when
+new keys are added beacause they are inserted at the end of the Map they will 
+be also iterated over, this can cause bugs in innocent-looking code:
+
+```go
+package main
+
+import (
+	"github.com/secnot/orderedmap"
+	"fmt"
+)
+
+func main() {
+	om := orderedmap.NewOrderedMap()
+
+	om.Set("John Smith",  44)
+	om.Set("Laura Paro",  39)
+
+	// This is an infinite  loop
+	iter := om.Iter()
+	for name, age, ok := iter.Next(); ok; name, age, ok = iter.Next() {
+		om.Set("Dr. " + name, age)
+		fmt.Printf("%v\n", name)
+	}
+
+	// Prints
+	// > John Smith
+	// > Laura Paro
+	// > Dr. John Smith
+	// > Dr. Laura Paro
+	// > Dr. Dr. John Smith
+	// > Dr. Dr. Laura Paro
+	// .....
+}
+```
+
+This problem can be avoided iterating in reverse ordered with **iter := om.IterReverse()**
+
+
+**Delete** is more restrictive and can only be used to delete the key being iterated 
+over at that moment.
+
+```go
+package main
+
+import "github.com/secnot/orderedmap"
+
+func main() {
+
+	om := orderedmap.NewOrderedMap()
+	om.Set("first", 1)
+	om.Set("second", 2)
+	om.Set("third", 3)
+
+	// This is safe
+	iter := om.Iter()
+	for k, _, ok := iter.Next(); ok; k, _, ok = iter.Next() {
+		om.Delete(k)
+	}
+
+	// This is NOT
+	iter = om.Iter()
+	for _, _, ok := iter.Next(); ok; _, _, ok = iter.Next() {
+		om.Delete("another key")
+	}
+}		
+
+```
+
+Lastly an OrderedMap can also act as queue or a stack with:
+
+**GetLast**
+**GetFirst**
+
+**Pop**
+**PopLast**
+**PopFirst**
+
+**Move**
+**MoveLast**
+**MoveFirst**
 
 ## Documentation
 
