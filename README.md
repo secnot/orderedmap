@@ -171,7 +171,7 @@ func main() {
 
 ```
 
-Lastly an OrderedMap can also be handled as queue or a stack with:
+Lastly an OrderedMap can also be handled as a queue or a stack with:
 
 **GetLast** | **GetFirst**
 
@@ -244,7 +244,7 @@ Create a map iterator
 ```go
 func (om *OrderedMap) IterReverse() *MapIterator
 ```
-Create a reverse ordered map iterator
+Create a reverse order map iterator
 
 
 #### func (om *OrderedMap) Len
@@ -268,7 +268,7 @@ Move an existing key to either the end of the OrderedMap
 ```go
 func (om *OrderedMap) MoveFirst(key interface{}) (ok bool)
 ```
-Shortcut to Move an element to the beginning
+Shortcut to Move a key to the beginning of the map
 
 
 #### func (om *OrderedMap) MoveLast
@@ -276,7 +276,7 @@ Shortcut to Move an element to the beginning
 ```go
 func (om *OrderedMap) MoveLast(key interface{}) (ok bool)
 ```
-Shortcut to Move an element to the end
+Shortcut to Move a key to the end of the map
 
 
 #### func (om *OrderedMap) Pop
@@ -337,6 +337,6 @@ type MapIterator struct {
 ```go
 func (mi *MapIterator) Next() (key interface{}, value interface{}, ok bool)
 ```    
-Return iterators next key:value pair
+Return iterators next key:value pair until the map is exhausted
 
 
