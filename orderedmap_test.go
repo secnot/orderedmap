@@ -1,4 +1,5 @@
-package ordered_map
+package orderedmap
+
 import (
 	"testing"
 	"fmt"
@@ -467,6 +468,7 @@ func TestMoveFirst(t *testing.T) {
 	}
 
 }
+
 
 
 func TestIterator(t *testing.T) {

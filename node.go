@@ -1,4 +1,4 @@
-package ordered_map
+package orderedmap
 
 
 // An element of an OrderedDict, forms a linked list ordered by insertion time
