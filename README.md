@@ -1,4 +1,4 @@
-# OrderedMap [![Build Status](https://travis-ci.org/secnot/orderedmap.svg?branch=master)](https://travis-ci.org/secnot/orderedmap)]
+# OrderedMap [![Build Status](https://travis-ci.org/secnot/orderedmap.svg?branch=master)](https://travis-ci.org/secnot/orderedmap)
 
 OrderedMap is a Go implentation of Python's OrderedDict class, a map that preserves 
 the order of insertion, so key:value pairs can be iterated in order they where added
@@ -73,7 +73,7 @@ Pop the last key from the map
 
 ```go
 key, value, ok := om.PopLast()
-// Alison, 52, true
+// > Alison, 52, true
 ```
 
 ## Documentation
@@ -85,138 +85,137 @@ type OrderedMap struct {
 	// contains filtered or unexported fields
 }
 
-### func NewOrderedMap
+#### func NewOrderedMap
 
-	```go
-	func NewOrderedMap() *OrderedMap
-	```
-    Create an empty OrderedMap
-
-
-### func (*OrderedMap) Delete
-	
-	```go
-	func (*OrderedMap) Delete(key interface{})
-	```
-    Delete a key:value pair from the map.
+```go
+func NewOrderedMap() *OrderedMap
+```
+Create an empty OrderedMap
 
 
-### func (*OrderedMap) Get
+#### func (*OrderedMap) Delete
 
-	```go
-	func (om *OrderedMap) Get(key interface{}) (value interface{}, ok bool)
-	```
-    Get the value of an existing key, leaving the map unchanged
-
-
-### func (om *OrderedMap) GetFirst
-	
-	```go
-	func (om *OrderedMap) GetFirst() (key interface{}, value interface{}, ok bool)
-	```
-    Get the key value for the beginning element, leaving the map unchanged
+```go
+func (*OrderedMap) Delete(key interface{})
+```
+Delete a key:value pair from the map.
 
 
-### func (om *OrderedMap) GetLast
-	
-	```go
-	func (om *OrderedMap) GetLast() (key interface{}, value interface{}, ok bool)
-	```
-    Get the key and value for the last element added, leaving the map
-    unchanged
+#### func (*OrderedMap) Get
+
+```go
+func (om *OrderedMap) Get(key interface{}) (value interface{}, ok bool)
+```
+Get the value of an existing key, leaving the map unchanged
 
 
-### func (om *OrderedMap) Iter
-	
-	```go	
-	func (om *OrderedMap) Iter() *MapIterator
-	```    
-	Create a map iterator
+#### func (om *OrderedMap) GetFirst
+
+```go
+func (om *OrderedMap) GetFirst() (key interface{}, value interface{}, ok bool)
+```
+Get the key value for the beginning element, leaving the map unchanged
 
 
-### func (om *OrderedMap) IterReverse
+#### func (om *OrderedMap) GetLast
 
-	```go
-	func (om *OrderedMap) IterReverse() *MapIterator
-    ```
-	Create a reverse ordered map iterator
-
-
-### func (om *OrderedMap) Len
-
-	```go
-	func (om *OrderedMap) Len() int
-	```
-    Len computes the number of elements in an OrderedMap
+```go
+func (om *OrderedMap) GetLast() (key interface{}, value interface{}, ok bool)
+```
+Get the key and value for the last element added, leaving the map
+unchanged
 
 
-### func (om *OrderedMap) Move
+#### func (om *OrderedMap) Iter
 
-	```go
-	func (om *OrderedMap) Move(key interface{}, last bool) (ok bool)
-	```
-    Move an existing key to either the end of the OrderedMap
-
-
-### func (om *OrderedMap) MoveFirst
-
-	```go
-	func (om *OrderedMap) MoveFirst(key interface{}) (ok bool)
-	```
-    Shortcut to Move an element to the beginning
+```go	
+func (om *OrderedMap) Iter() *MapIterator
+```    
+Create a map iterator
 
 
-### func (om *OrderedMap) MoveLast
-  
-  	```go
-	func (om *OrderedMap) MoveLast(key interface{}) (ok bool)
-    ```
-	Shortcut to Move an element to the end
+#### func (om *OrderedMap) IterReverse
+
+```go
+func (om *OrderedMap) IterReverse() *MapIterator
+```
+Create a reverse ordered map iterator
 
 
-### func (om *OrderedMap) Pop
+#### func (om *OrderedMap) Len
 
-	```go
-	func (om *OrderedMap) Pop(last bool) (key interface{}, value interface{}, ok bool)
-    ```
-
-	Pop and return key:value for the newest or oldest element on the OrderedMap
-    OrderedMap returns key, value, ok last = false -> FIFO last = true ->
-    LIFO
+```go
+func (om *OrderedMap) Len() int
+```
+Len computes the number of elements in an OrderedMap
 
 
-### func (om *OrderedMap) PopFirst
+#### func (om *OrderedMap) Move
 
-	```go
-	func (om *OrderedMap) PopFirst() (key interface{}, value interface{}, ok bool)
-    ```
+```go
+func (om *OrderedMap) Move(key interface{}, last bool) (ok bool)
+```
+Move an existing key to either the end of the OrderedMap
 
-	Shortcut to Pop the first element
+
+#### func (om *OrderedMap) MoveFirst
+
+```go
+func (om *OrderedMap) MoveFirst(key interface{}) (ok bool)
+```
+Shortcut to Move an element to the beginning
 
 
-### func (om *OrderedMap) PopLast
+#### func (om *OrderedMap) MoveLast
 
-	```go
-	func (om *OrderedMap) PopLast() (key interface{}, value interface{}, ok bool)
-    ```
-	Shortcut to Pop the last element
+```go
+func (om *OrderedMap) MoveLast(key interface{}) (ok bool)
+```
+Shortcut to Move an element to the end
 
-### func (om *OrderedMap) Set
 
-	```go
-	func (om *OrderedMap) Set(key interface{}, value interface{})
-    ```
-	Sets the key value, if the key overwrites an existing entry, the
-    original insertion position is left unchanged, otherwise the key is
-    inserted at the end.
+#### func (om *OrderedMap) Pop
+
+```go
+func (om *OrderedMap) Pop(last bool) (key interface{}, value interface{}, ok bool)
+```
+
+Pop and return key:value for the newest or oldest element on the OrderedMap.
+
+
+#### func (om *OrderedMap) PopFirst
+
+```go
+func (om *OrderedMap) PopFirst() (key interface{}, value interface{}, ok bool)
+```
+
+Shortcut to Pop the first element
+
+
+#### func (om *OrderedMap) PopLast
+
+```go
+func (om *OrderedMap) PopLast() (key interface{}, value interface{}, ok bool)
+```
+Shortcut to Pop the last element
+
+
+#### func (om *OrderedMap) Set
+
+```go
+func (om *OrderedMap) Set(key interface{}, value interface{})
+```
+Sets the key value, if the key exists it overwrites the existing entry, and
+the original insertion position is left unchanged, otherwise the key is
+inserted at the end.
 
 
 ## func (om *OrderedMap) String 
 
-	```go
-	func (om *OrderedMap) String() string
-	```
-    Stringer interface
+```go
+func (om *OrderedMap) String() string
+```
+Stringer interface
 
 
 ## Type
@@ -226,11 +225,11 @@ type MapIterator struct {
 }
 
 
-### func (mi *MapIterator) Next
+#### func (mi *MapIterator) Next
 
-	```go
-	func (mi *MapIterator) Next() (key interface{}, value interface{}, ok bool)
-	```    
-	Return iterators next key:value pair
+```go
+func (mi *MapIterator) Next() (key interface{}, value interface{}, ok bool)
+```    
+Return iterators next key:value pair
 
 
