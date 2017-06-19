@@ -100,8 +100,8 @@ While iterating over an OrderedMap only three methods can be called safely,
 two.
 
 **Set** can update the value of any existing key without problems, but new
-keys are inserted at the end of the Map and they will be also iterated over, 
-this can cause bugs in innocent-looking code:
+keys are inserted at the end of the Map so they will be also iterated over, 
+this can cause bugs on innocent-looking code:
 
 ```go
 package main
