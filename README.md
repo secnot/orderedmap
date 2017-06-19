@@ -81,9 +81,11 @@ key, value, ok := om.PopLast()
 
 ## TYPE
 
+```go
 type OrderedMap struct {
 	// contains filtered or unexported fields
 }
+```
 
 #### func NewOrderedMap
 
@@ -220,9 +222,11 @@ Stringer interface
 
 ## Type
 
+```go
 type MapIterator struct {
 	// contains filtered or unexported fields
 }
+```
 
 
 #### func (mi *MapIterator) Next
