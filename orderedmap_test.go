@@ -12,17 +12,17 @@ func TestNewOrderedMap(t *testing.T) {
 	om.Set("key", "value")
 
 	if val, ok := om.Get(5); val != 33 || !ok {
-		t.Error("Value error, expecting 33 received %d", val)
+		t.Error(fmt.Sprintf("Value error, expecting 33 received %v", val))
 	}
 	if val, ok := om.Get(6); val != 44 || !ok {
-		t.Error("Value error, expecting 44 received %d", val)
+		t.Error(fmt.Sprintf("Value error, expecting 44 received %v", val))
 	}
 	if val, ok := om.Get("key"); val != "value" || !ok {
-		t.Error("Value error, expecting 'value' recived %s", val)
+		t.Error(fmt.Sprintf("Value error, expecting 'value' received %v", val))
 	}
 
 	if val, ok := om.Get("not a key"); ok || val != nil {
-		t.Error("Shouldn't have returned %v", val)
+		t.Error(fmt.Sprintf("Shouldn't have returned %v", val))
 	}
 }
 
