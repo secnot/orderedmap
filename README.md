@@ -2,6 +2,7 @@
 
 OrderedMap is a Go implentation of Python's OrderedDict class, a map that preserves 
 the order of insertion, so key:value pairs can be iterated in the order they where added.
+It can also be used as a stack (LIFO) or queue (FIFO).
 
 ## Installing
 
@@ -252,7 +253,7 @@ Create a reverse order map iterator
 ```go
 func (om *OrderedMap) Len() int
 ```
-Len computes the number of elements in an OrderedMap
+Return the number of elements in an OrderedMap
 
 
 #### func (om *OrderedMap) Move

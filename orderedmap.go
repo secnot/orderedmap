@@ -1,3 +1,7 @@
+// OrderedMap is a Go implentation of Python's OrderedDict class, a map that 
+// preserves the order of insertion, so key:value pairs can be iterated in 
+// the order they where added.
+// It can also be used as a stack (LIFO) or queue (FIFO).
 package orderedmap
 
 import "fmt"
@@ -19,7 +23,7 @@ func NewOrderedMap() *OrderedMap {
 	return om
 }
 
-// Len computes the number of elements in an OrderedMap
+// Return the number of elements in the Map
 func (om *OrderedMap) Len() int {
 	return len(om.table)
 }
@@ -41,31 +45,35 @@ func (om *OrderedMap) Set(key interface{}, value interface{}) {
 }
 
 // Get the value of an existing key, leaving the map unchanged
-func (om *OrderedMap) Get(key interface{}) (interface{}, bool) {
-	if node, ok := om.table[key]; !ok {
-		return nil, false
+func (om *OrderedMap) Get(key interface{}) (value interface{}, ok bool) {
+	if node, is_ok := om.table[key]; !is_ok {
+		value, ok = nil, false
 	} else {
-		return node.Value, true
+		value, ok = node.Value, true
 	}
+	return
 }
 
 // Get the key and value for the last element added, leaving the map unchanged
-func (om *OrderedMap) GetLast() (interface{}, interface{}, bool) {
+func (om *OrderedMap) GetLast() (key interface{}, value interface{}, ok bool) {
 	if len(om.table) == 0 {
-		return nil, nil, false
+		key, value, ok = nil, nil, false
+	} else {
+		node := om.root.Prev
+		key, value, ok = node.Key, node.Value, true
 	}
-	node := om.root.Prev
-	return node.Key, node.Value, true
+	return
 }
 
 // Get the key value for the beginning element, leaving the map unchanged
-func (om *OrderedMap) GetFirst() (interface{}, interface{}, bool) {
+func (om *OrderedMap) GetFirst() (key interface{}, value interface{}, ok bool) {
 	if len(om.table) == 0 {
-		return nil, nil, false
+		key, value, ok = nil, nil, false
+	} else {
+		node := om.root.Next
+		key, value, ok = node.Key, node.Value, true
 	}
-
-	node := om.root.Next
-	return node.Key, node.Value, true
+	return
 }
 
 // Delete a key:value pair from the map.
@@ -79,9 +87,6 @@ func (om *OrderedMap) Delete(key interface{}) {
 }
 
 // Pop and return key:value for the newest or oldest element on the OrderedMap
-// returns key, value, ok
-// last = false -> FIFO
-// last = true  -> LIFO
 func (om *OrderedMap) Pop(last bool) (key interface{}, value interface{}, ok bool) {
 	if last {
 		key, value, ok = om.GetLast()
@@ -106,7 +111,7 @@ func (om *OrderedMap) PopFirst() (key interface{}, value interface{}, ok bool) {
 }
 
 // Move an existing key to either the end of the OrderedMap
-func (om *OrderedMap) Move(key interface{}, last bool) bool {
+func (om *OrderedMap) Move(key interface{}, last bool) (ok bool) {
 
 	var moved *node
 
@@ -136,13 +141,13 @@ func (om *OrderedMap) Move(key interface{}, last bool) bool {
 	return true
 }
 
-// Shortcut to Move an element to the end
-func (om *OrderedMap) MoveLast(key interface{}) bool {
+// Shortcut to Move a key to the end o the map
+func (om *OrderedMap) MoveLast(key interface{}) (ok bool) {
 	return om.Move(key, true)
 }
 
-// Shortcut to Move an element to the beginning
-func (om *OrderedMap) MoveFirst(key interface{}) bool {
+// Shortcut to Move a key to the beginning of the map
+func (om *OrderedMap) MoveFirst(key interface{}) (ok bool) {
 	return om.Move(key, false)
 }
 
@@ -162,7 +167,7 @@ func (om *OrderedMap) Iter() *MapIterator {
 	}
 }
 
-// Create a reverse ordered map iterator
+// Create a reverse order map iterator
 func (om *OrderedMap) IterReverse() *MapIterator {
 	return &MapIterator{
 		curr:    om.root,
@@ -172,13 +177,14 @@ func (om *OrderedMap) IterReverse() *MapIterator {
 }
 
 // Return next key:value pair
-func (mi *MapIterator) Next() (interface{}, interface{}, bool) {
+func (mi *MapIterator) Next() (key interface{}, value interface{}, ok bool) {
 
 	// Already finished
 	if mi.curr == nil {
 		return nil, nil, false
 	}
 
+	// Advance pointer
 	if mi.reverse {
 		mi.curr = mi.curr.Prev
 	} else {
@@ -188,10 +194,12 @@ func (mi *MapIterator) Next() (interface{}, interface{}, bool) {
 	// This is the last iteration
 	if mi.curr == mi.root {
 		mi.curr = nil
-		return nil, nil, false
+		key, value, ok = nil, nil, false
+	} else {
+		key, value, ok = mi.curr.Key, mi.curr.Value, true
 	}
-
-	return mi.curr.Key, mi.curr.Value, true
+	
+	return
 }
 
 // Stringer interface
