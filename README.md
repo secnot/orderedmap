@@ -1,4 +1,4 @@
-# OrderedMap [![Build Status](https://travis-ci.org/secnot/orderedmap.svg?branch=master)](https://travis-ci.org/secnot/orderedmap)
+# OrderedMap [![Build Status](https://travis-ci.org/secnot/orderedmap.svg?branch=master)](https://travis-ci.org/secnot/orderedmap) [![GoDoc](https://godoc.org/github.com/secnot/orderedmap?status.svg)](http://godoc.org/github.com/secnot/orderedmap)
 
 OrderedMap is a Go implentation of Python's OrderedDict class, a map that preserves 
 the order of insertion, so key:value pairs can be iterated in the order they where added.
