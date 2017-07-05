@@ -69,12 +69,12 @@ func ApplyIterFunc(t *testing.T, om *OrderedMap, ifunc VisitorFunc, values []Key
 func TestIterator(t *testing.T) {
 
 	tests := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 1},
-		KeyValue{2, 2},
-		KeyValue{3, 3},
-		KeyValue{4, 4},
-		KeyValue{5, 5},
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{3, 3},
+		{4, 4},
+		{5, 5},
 	}
 
 	om := NewOrderedMap()
@@ -135,11 +135,11 @@ func TestIterator(t *testing.T) {
 func TestIterSet(t *testing.T) {
 
 	tests := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 1},
-		KeyValue{2, 2},
-		KeyValue{3, 3},
-		KeyValue{4, 4},
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{3, 3},
+		{4, 4},
 	}
 
 	// Modify current key while iterating
@@ -158,11 +158,11 @@ func TestIterSet(t *testing.T) {
 	}
 
 	result1 := []KeyValue{
-		KeyValue{0, 100},
-		KeyValue{1, 1},
-		KeyValue{2, 100},
-		KeyValue{3, 3},
-		KeyValue{4, 100},
+		{0, 100},
+		{1, 1},
+		{2, 100},
+		{3, 3},
+		{4, 100},
 	}
 
 	ApplyIterFunc(t, om, nil, result1, false)
@@ -182,11 +182,11 @@ func TestIterSet(t *testing.T) {
 	}
 
 	result2 := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 101},
-		KeyValue{2, 2},
-		KeyValue{3, 101},
-		KeyValue{4, 4},
+		{0, 0},
+		{1, 101},
+		{2, 2},
+		{3, 101},
+		{4, 4},
 	}
 
 	ApplyIterFunc(t, om, nil, result2, false)
@@ -206,11 +206,11 @@ func TestIterSet(t *testing.T) {
 	}
 
 	result3 := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 103},
-		KeyValue{2, 2},
-		KeyValue{3, 103},
-		KeyValue{4, 4},
+		{0, 0},
+		{1, 103},
+		{2, 2},
+		{3, 103},
+		{4, 4},
 	}
 
 	ApplyIterFunc(t, om, nil, result3, false)
@@ -219,11 +219,11 @@ func TestIterSet(t *testing.T) {
 func TestIterReverseSet(t *testing.T) {
 
 	tests := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 1},
-		KeyValue{2, 2},
-		KeyValue{3, 3},
-		KeyValue{4, 4},
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{3, 3},
+		{4, 4},
 	}
 
 	// Modify current key while iterating
@@ -242,11 +242,11 @@ func TestIterReverseSet(t *testing.T) {
 	}
 
 	result1 := []KeyValue{
-		KeyValue{0, 100},
-		KeyValue{1, 1},
-		KeyValue{2, 100},
-		KeyValue{3, 3},
-		KeyValue{4, 100},
+		{0, 100},
+		{1, 1},
+		{2, 100},
+		{3, 3},
+		{4, 100},
 	}
 
 	ApplyIterFunc(t, om, nil, result1, false)
@@ -266,11 +266,11 @@ func TestIterReverseSet(t *testing.T) {
 	}
 
 	result2 := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 101},
-		KeyValue{2, 2},
-		KeyValue{3, 101},
-		KeyValue{4, 4},
+		{0, 0},
+		{1, 101},
+		{2, 2},
+		{3, 101},
+		{4, 4},
 	}
 
 	ApplyIterFunc(t, om, nil, result2, false)
@@ -290,11 +290,11 @@ func TestIterReverseSet(t *testing.T) {
 	}
 
 	result3 := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 103},
-		KeyValue{2, 2},
-		KeyValue{3, 103},
-		KeyValue{4, 4},
+		{0, 0},
+		{1, 103},
+		{2, 2},
+		{3, 103},
+		{4, 4},
 	}
 
 	ApplyIterFunc(t, om, nil, result3, false)
@@ -307,11 +307,11 @@ func TestIterInsert(t *testing.T) {
 	// current iteration, unless the last one has already been reached
 	// or it is using IterReverse.
 	tests := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 1},
-		KeyValue{2, 2},
-		KeyValue{3, 3},
-		KeyValue{4, 4},
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{3, 3},
+		{4, 4},
 	}
 
 	om := NewOrderedMap()
@@ -333,16 +333,16 @@ func TestIterInsert(t *testing.T) {
 	}
 
 	result := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 1},
-		KeyValue{2, 2},
-		KeyValue{3, 3},
-		KeyValue{4, 4},
-		KeyValue{100, 100},
-		KeyValue{101, 100},
-		KeyValue{102, 100},
-		KeyValue{103, 100},
-		KeyValue{104, 100},
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{3, 3},
+		{4, 4},
+		{100, 100},
+		{101, 100},
+		{102, 100},
+		{103, 100},
+		{104, 100},
 	}
 
 	ApplyIterFunc(t, om, nil, result, false)
@@ -353,11 +353,11 @@ func TestIterReverseInsert(t *testing.T) {
 	// Can insert keys while iterating but will not appear in the
 	// current iteration
 	tests := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 1},
-		KeyValue{2, 2},
-		KeyValue{3, 3},
-		KeyValue{4, 4},
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{3, 3},
+		{4, 4},
 	}
 
 	om := NewOrderedMap()
@@ -379,16 +379,16 @@ func TestIterReverseInsert(t *testing.T) {
 	}
 
 	result := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 1},
-		KeyValue{2, 2},
-		KeyValue{3, 3},
-		KeyValue{4, 4},
-		KeyValue{104, 100},
-		KeyValue{103, 100},
-		KeyValue{102, 100},
-		KeyValue{101, 100},
-		KeyValue{100, 100},
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{3, 3},
+		{4, 4},
+		{104, 100},
+		{103, 100},
+		{102, 100},
+		{101, 100},
+		{100, 100},
 	}
 
 	ApplyIterFunc(t, om, nil, result, false)
@@ -432,13 +432,13 @@ func TestIterDeleteCurrent(t *testing.T) {
 func TestIterDeleteAll(t *testing.T) {
 
 	tests := []KeyValue{
-		KeyValue{0, 0},
-		KeyValue{1, 1},
-		KeyValue{2, 2},
-		KeyValue{3, 3},
-		KeyValue{4, 4},
-		KeyValue{5, 5},
-		KeyValue{6, 6},
+		{0, 0},
+		{1, 1},
+		{2, 2},
+		{3, 3},
+		{4, 4},
+		{5, 5},
+		{6, 6},
 	}
 
 	// Initialize map with al test elements
@@ -461,9 +461,9 @@ func TestIterDeleteAll(t *testing.T) {
 
 	// Check odd keys where not deleted
 	result := []KeyValue{
-		KeyValue{1, 1},
-		KeyValue{3, 3},
-		KeyValue{5, 5},
+		{1, 1},
+		{3, 3},
+		{5, 5},
 	}
 
 	ApplyIterFunc(t, om, nil, result, false)
