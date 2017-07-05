@@ -5,6 +5,42 @@ import (
 	"testing"
 )
 
+// Test key present in OrderedMap
+func mapHasKey(t *testing.T, om *OrderedMap, key interface{}, value interface{}) bool {
+
+	if v, ok := om.Get(key); v != value || !ok {
+		t.Error(fmt.Sprintf("Get(%v) -> expected %v received %v", key, value, v))
+		return false
+	}
+	return true
+}
+
+// Test key not present in OrderedMap
+func mapNotKey(t *testing.T, om *OrderedMap, key interface{}) bool {
+
+	if v, ok := om.Get(key); v != nil || ok {
+		t.Error(fmt.Sprintf("Get(%v) -> shouldn't have a value", key))
+		return true
+	}
+	return false
+}
+
+// Test map is empty
+func mapIsEmpty(t *testing.T, om *OrderedMap) bool {
+
+	if om.Len() != 0 {
+		t.Error("Map is not empty")
+		return false
+	}
+
+	if key, value, ok := om.PopLast(); key != nil || value != nil || ok {
+		t.Error("Map length is 0 but Pop() returned and item")
+		return false
+	}
+
+	return true
+}
+
 func TestNewOrderedMap(t *testing.T) {
 	om := NewOrderedMap()
 	om.Set(5, 33)
@@ -98,99 +134,55 @@ func TestPop(t *testing.T) {
 	om.Set("two", 2)
 	om.Set("three", 3)
 
-	// Test key present in OrderedMap
-	testHasKeyFunc := func(om *OrderedMap, key interface{}, value interface{}) bool {
-
-		if v, ok := om.Get(key); v != value || !ok {
-			t.Error(fmt.Sprintf("Get(%v) -> expected %v received %v", key, value, v))
-			return false
-		}
-
-		return true
-	}
-
-	// Test key not present in OrderedMap
-	testNotKeyFunc := func(om *OrderedMap, key interface{}) bool {
-
-		if v, ok := om.Get(key); v != nil || ok {
-			t.Error(fmt.Sprintf("Get(%v) -> shouldn't have a value", key))
-			return true
-		}
-		return false
-	}
-
 	// Pop last
 	if key, val, ok := om.Pop(true); key != "three" || val != 3 || !ok {
 		t.Error("Pop last item error")
 	}
-	testHasKeyFunc(om, "one", 1)
-	testHasKeyFunc(om, "two", 2)
-	testNotKeyFunc(om, "three")
+	mapHasKey(t, om, "one", 1)
+	mapHasKey(t, om, "two", 2)
+	mapNotKey(t, om, "three")
 
 	// Pop first
 	if key, val, ok := om.Pop(false); key != "one" || val != 1 || !ok {
 		t.Error("Pop first item error")
 	}
-	testHasKeyFunc(om, "two", 2)
-	testNotKeyFunc(om, "one")
-	testNotKeyFunc(om, "three")
+	mapHasKey(t, om, "two", 2)
+	mapNotKey(t, om, "one")
+	mapNotKey(t, om, "three")
 
 	// Add and Pop again
 	om.Set("four", 4)
-	om.Set("five", 5)
 	om.Set("two", "new 2") //This should only change the value
-	testNotKeyFunc(om, "one")
-	testNotKeyFunc(om, "three")
-	testHasKeyFunc(om, "two", "new 2")
-	testHasKeyFunc(om, "four", 4)
-	testHasKeyFunc(om, "five", 5)
+	mapNotKey(t, om, "one")
+	mapNotKey(t, om, "three")
+	mapHasKey(t, om, "two", "new 2")
+	mapHasKey(t, om, "four", 4)
 
-	// pop first
-	if key, val, ok := om.Pop(false); key != "two" || val != "new 2" || !ok {
-		t.Error("Popped ")
-	}
-	testNotKeyFunc(om, "one")
-	testNotKeyFunc(om, "two")
-	testNotKeyFunc(om, "three")
-	testHasKeyFunc(om, "four", 4)
-	testHasKeyFunc(om, "five", 5)
+	// Pop last
+	om.Pop(false)
+	mapNotKey(t, om, "one")
+	mapNotKey(t, om, "two")
+	mapNotKey(t, om, "three")
+	mapHasKey(t, om, "four", 4)
 
-	if key, val, ok := om.Pop(true); key != "five" || val != 5 || !ok {
-		t.Error("Pop Error ")
-	}
-	testNotKeyFunc(om, "one")
-	testNotKeyFunc(om, "two")
-	testNotKeyFunc(om, "three")
-	testNotKeyFunc(om, "five")
-	testHasKeyFunc(om, "four", 4)
-
-	if key, val, ok := om.Pop(true); key != "four" || val != 4 || !ok {
-		t.Error(key, val, ok)
-		t.Error("Pop Error ")
-	}
-	testNotKeyFunc(om, "one")
-	testNotKeyFunc(om, "two")
-	testNotKeyFunc(om, "three")
-	testNotKeyFunc(om, "four")
-	testNotKeyFunc(om, "five")
+	// Pop first
+	om.Pop(true)
+	mapNotKey(t, om, "one")
+	mapNotKey(t, om, "two")
+	mapNotKey(t, om, "three")
+	mapNotKey(t, om, "four")
 
 	// Check it is empty
-	if key, val, ok := om.Pop(false); key != nil || val != nil || ok {
-		t.Error("Pop should be empty")
-	}
+	mapIsEmpty(t, om)
 
 	// Add a last one and pop it
 	om.Set("six", 6)
-	testHasKeyFunc(om, "six", 6)
-	if key, val, ok := om.Pop(true); key != "six" || val != 6 || !ok {
-		t.Error("Pop Error ")
-	}
-	testNotKeyFunc(om, "six")
+	mapHasKey(t, om, "six", 6)
+	om.Pop(true)
+	mapNotKey(t, om, "six")
 
-	// Try to pop an item from an empty amp
-	if key, val, ok := om.Pop(true); key != nil || val != nil || ok {
-		t.Error("Map should be empty")
-	}
+	// Try to pop an item from an empty map
+	mapIsEmpty(t, om)
 }
 
 func TestPopLast(t *testing.T) {
@@ -241,59 +233,30 @@ func TestLen(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 
-	// Test key present in OrderedMap
-	testHasKeyFunc := func(om *OrderedMap, key interface{}, value interface{}) bool {
-
-		if v, ok := om.Get(key); v != value || !ok {
-			t.Error(fmt.Sprintf("Get(%v) -> expected %v received %v", key, value, v))
-			return false
-		}
-		return true
-	}
-
-	// Test key not present in OrderedMap
-	testNotKeyFunc := func(om *OrderedMap, key interface{}) bool {
-
-		if v, ok := om.Get(key); v != nil || ok {
-			t.Error(fmt.Sprintf("Get(%v) -> shouldn't have a value", key))
-			return true
-		}
-		return false
-	}
-
 	om := NewOrderedMap()
 
 	om.Set("one", 1)
 	om.Set("two", 2)
 
 	om.Delete("one")
-	testNotKeyFunc(om, "one")
-	testHasKeyFunc(om, "two", 2)
+	mapNotKey(t, om, "one")
+	mapHasKey(t, om, "two", 2)
 
 	om.Delete("two")
-	testNotKeyFunc(om, "one")
-	testNotKeyFunc(om, "two")
+	mapNotKey(t, om, "one")
+	mapNotKey(t, om, "two")
 
 	// Add and delete from empty OrderedMap
 	om.Set("three", 3)
-	testHasKeyFunc(om, "three", 3)
+	mapHasKey(t, om, "three", 3)
 
 	om.Delete("three")
-	testNotKeyFunc(om, "three")
+	mapNotKey(t, om, "three")
 
-	if _, _, ok := om.Pop(true); ok {
-		t.Error("Map should be empty")
-	}
+	mapIsEmpty(t, om)
 }
 
 func TestMove(t *testing.T) {
-
-	// Test key present in OrderedMap
-	testHasKeyFunc := func(om *OrderedMap, key interface{}, value interface{}) {
-		if v, ok := om.Get(key); v != value || !ok {
-			t.Error(fmt.Sprintf("Get(%v) -> expected %v received %v", key, value, v))
-		}
-	}
 
 	// Move last
 	om := NewOrderedMap()
@@ -306,9 +269,9 @@ func TestMove(t *testing.T) {
 
 	// Move "one" element to the end
 	om.Move("one", true)
-	testHasKeyFunc(om, "one", 1)
-	testHasKeyFunc(om, "two", 2)
-	testHasKeyFunc(om, "three", 3)
+	mapHasKey(t, om, "one", 1)
+	mapHasKey(t, om, "two", 2)
+	mapHasKey(t, om, "three", 3)
 	if key, value, ok := om.Pop(true); key != "one" || value != 1 || !ok {
 		t.Error("Item was not moved to the end")
 	}
@@ -320,8 +283,8 @@ func TestMove(t *testing.T) {
 
 	// Move "three" to the beginning
 	om.Move("three", false)
-	testHasKeyFunc(om, "three", 3)
-	testHasKeyFunc(om, "two", 2)
+	mapHasKey(t, om, "three", 3)
+	mapHasKey(t, om, "two", 2)
 	if key, value, ok := om.Pop(true); key != "two" || value != 2 || !ok {
 		t.Error("Item was not moved to the start")
 	}
@@ -329,17 +292,15 @@ func TestMove(t *testing.T) {
 	// Move when there is a single element
 	om.Move("three", false)
 	om.Move("three", true)
-	testHasKeyFunc(om, "three", 3)
+	mapHasKey(t, om, "three", 3)
 
 	if key, value, ok := om.Pop(false); key != "three" || value != 3 || !ok {
 		t.Error("There was an error while moving the last element")
 	}
 
-	if om.Len() != 0 {
-		t.Error("The Map should have been empty")
-	}
+	mapIsEmpty(t, om)
 
-	// Tru to move empty map
+	// Try to move empty map
 	if ok := om.Move("three", true); ok {
 		t.Error("Somehow moved a key in an empy map")
 	}
