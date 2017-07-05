@@ -99,81 +99,80 @@ func TestPop(t *testing.T) {
 	om.Set("three", 3)
 
 	// Test key present in OrderedMap
-	test_has_key := func(om *OrderedMap, key interface{}, value interface{}) bool {
+	testHasKeyFunc := func(om *OrderedMap, key interface{}, value interface{}) bool {
 
 		if v, ok := om.Get(key); v != value || !ok {
 			t.Error(fmt.Sprintf("Get(%v) -> expected %v received %v", key, value, v))
 			return false
-		} else {
-			return true
 		}
+
+		return true
 	}
 
 	// Test key not present in OrderedMap
-	test_not_key := func(om *OrderedMap, key interface{}) bool {
+	testNotKeyFunc := func(om *OrderedMap, key interface{}) bool {
 
 		if v, ok := om.Get(key); v != nil || ok {
 			t.Error(fmt.Sprintf("Get(%v) -> shouldn't have a value", key))
 			return true
-		} else {
-			return false
 		}
+		return false
 	}
 
 	// Pop last
 	if key, val, ok := om.Pop(true); key != "three" || val != 3 || !ok {
 		t.Error("Pop last item error")
 	}
-	test_has_key(om, "one", 1)
-	test_has_key(om, "two", 2)
-	test_not_key(om, "three")
+	testHasKeyFunc(om, "one", 1)
+	testHasKeyFunc(om, "two", 2)
+	testNotKeyFunc(om, "three")
 
 	// Pop first
 	if key, val, ok := om.Pop(false); key != "one" || val != 1 || !ok {
 		t.Error("Pop first item error")
 	}
-	test_has_key(om, "two", 2)
-	test_not_key(om, "one")
-	test_not_key(om, "three")
+	testHasKeyFunc(om, "two", 2)
+	testNotKeyFunc(om, "one")
+	testNotKeyFunc(om, "three")
 
 	// Add and Pop again
 	om.Set("four", 4)
 	om.Set("five", 5)
 	om.Set("two", "new 2") //This should only change the value
-	test_not_key(om, "one")
-	test_not_key(om, "three")
-	test_has_key(om, "two", "new 2")
-	test_has_key(om, "four", 4)
-	test_has_key(om, "five", 5)
+	testNotKeyFunc(om, "one")
+	testNotKeyFunc(om, "three")
+	testHasKeyFunc(om, "two", "new 2")
+	testHasKeyFunc(om, "four", 4)
+	testHasKeyFunc(om, "five", 5)
 
 	// pop first
 	if key, val, ok := om.Pop(false); key != "two" || val != "new 2" || !ok {
 		t.Error("Popped ")
 	}
-	test_not_key(om, "one")
-	test_not_key(om, "two")
-	test_not_key(om, "three")
-	test_has_key(om, "four", 4)
-	test_has_key(om, "five", 5)
+	testNotKeyFunc(om, "one")
+	testNotKeyFunc(om, "two")
+	testNotKeyFunc(om, "three")
+	testHasKeyFunc(om, "four", 4)
+	testHasKeyFunc(om, "five", 5)
 
 	if key, val, ok := om.Pop(true); key != "five" || val != 5 || !ok {
 		t.Error("Pop Error ")
 	}
-	test_not_key(om, "one")
-	test_not_key(om, "two")
-	test_not_key(om, "three")
-	test_not_key(om, "five")
-	test_has_key(om, "four", 4)
+	testNotKeyFunc(om, "one")
+	testNotKeyFunc(om, "two")
+	testNotKeyFunc(om, "three")
+	testNotKeyFunc(om, "five")
+	testHasKeyFunc(om, "four", 4)
 
 	if key, val, ok := om.Pop(true); key != "four" || val != 4 || !ok {
-		t.Error("%v %v %v", key, val, ok)
+		t.Error(key, val, ok)
 		t.Error("Pop Error ")
 	}
-	test_not_key(om, "one")
-	test_not_key(om, "two")
-	test_not_key(om, "three")
-	test_not_key(om, "four")
-	test_not_key(om, "five")
+	testNotKeyFunc(om, "one")
+	testNotKeyFunc(om, "two")
+	testNotKeyFunc(om, "three")
+	testNotKeyFunc(om, "four")
+	testNotKeyFunc(om, "five")
 
 	// Check it is empty
 	if key, val, ok := om.Pop(false); key != nil || val != nil || ok {
@@ -182,11 +181,11 @@ func TestPop(t *testing.T) {
 
 	// Add a last one and pop it
 	om.Set("six", 6)
-	test_has_key(om, "six", 6)
+	testHasKeyFunc(om, "six", 6)
 	if key, val, ok := om.Pop(true); key != "six" || val != 6 || !ok {
 		t.Error("Pop Error ")
 	}
-	test_not_key(om, "six")
+	testNotKeyFunc(om, "six")
 
 	// Try to pop an item from an empty amp
 	if key, val, ok := om.Pop(true); key != nil || val != nil || ok {
@@ -236,32 +235,30 @@ func TestLen(t *testing.T) {
 	}
 	om.Pop(true)
 	if l := om.Len(); l != 0 {
-		t.Error("Expection 0, returned ", l)
+		t.Error("Expecting 0, returned ", l)
 	}
 }
 
 func TestDelete(t *testing.T) {
 
 	// Test key present in OrderedMap
-	test_has_key := func(om *OrderedMap, key interface{}, value interface{}) bool {
+	testHasKeyFunc := func(om *OrderedMap, key interface{}, value interface{}) bool {
 
 		if v, ok := om.Get(key); v != value || !ok {
 			t.Error(fmt.Sprintf("Get(%v) -> expected %v received %v", key, value, v))
 			return false
-		} else {
-			return true
 		}
+		return true
 	}
 
 	// Test key not present in OrderedMap
-	test_not_key := func(om *OrderedMap, key interface{}) bool {
+	testNotKeyFunc := func(om *OrderedMap, key interface{}) bool {
 
 		if v, ok := om.Get(key); v != nil || ok {
 			t.Error(fmt.Sprintf("Get(%v) -> shouldn't have a value", key))
 			return true
-		} else {
-			return false
 		}
+		return false
 	}
 
 	om := NewOrderedMap()
@@ -270,19 +267,19 @@ func TestDelete(t *testing.T) {
 	om.Set("two", 2)
 
 	om.Delete("one")
-	test_not_key(om, "one")
-	test_has_key(om, "two", 2)
+	testNotKeyFunc(om, "one")
+	testHasKeyFunc(om, "two", 2)
 
 	om.Delete("two")
-	test_not_key(om, "one")
-	test_not_key(om, "two")
+	testNotKeyFunc(om, "one")
+	testNotKeyFunc(om, "two")
 
 	// Add and delete from empty OrderedMap
 	om.Set("three", 3)
-	test_has_key(om, "three", 3)
+	testHasKeyFunc(om, "three", 3)
 
 	om.Delete("three")
-	test_not_key(om, "three")
+	testNotKeyFunc(om, "three")
 
 	if _, _, ok := om.Pop(true); ok {
 		t.Error("Map should be empty")
@@ -292,7 +289,7 @@ func TestDelete(t *testing.T) {
 func TestMove(t *testing.T) {
 
 	// Test key present in OrderedMap
-	test_has_key := func(om *OrderedMap, key interface{}, value interface{}) {
+	testHasKeyFunc := func(om *OrderedMap, key interface{}, value interface{}) {
 		if v, ok := om.Get(key); v != value || !ok {
 			t.Error(fmt.Sprintf("Get(%v) -> expected %v received %v", key, value, v))
 		}
@@ -309,9 +306,9 @@ func TestMove(t *testing.T) {
 
 	// Move "one" element to the end
 	om.Move("one", true)
-	test_has_key(om, "one", 1)
-	test_has_key(om, "two", 2)
-	test_has_key(om, "three", 3)
+	testHasKeyFunc(om, "one", 1)
+	testHasKeyFunc(om, "two", 2)
+	testHasKeyFunc(om, "three", 3)
 	if key, value, ok := om.Pop(true); key != "one" || value != 1 || !ok {
 		t.Error("Item was not moved to the end")
 	}
@@ -323,8 +320,8 @@ func TestMove(t *testing.T) {
 
 	// Move "three" to the beginning
 	om.Move("three", false)
-	test_has_key(om, "three", 3)
-	test_has_key(om, "two", 2)
+	testHasKeyFunc(om, "three", 3)
+	testHasKeyFunc(om, "two", 2)
 	if key, value, ok := om.Pop(true); key != "two" || value != 2 || !ok {
 		t.Error("Item was not moved to the start")
 	}
@@ -332,7 +329,7 @@ func TestMove(t *testing.T) {
 	// Move when there is a single element
 	om.Move("three", false)
 	om.Move("three", true)
-	test_has_key(om, "three", 3)
+	testHasKeyFunc(om, "three", 3)
 
 	if key, value, ok := om.Pop(false); key != "three" || value != 3 || !ok {
 		t.Error("There was an error while moving the last element")

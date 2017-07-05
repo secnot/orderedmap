@@ -1,17 +1,18 @@
-// OrderedMap is a Go implentation of Python's OrderedDict class, a map that 
-// preserves the order of insertion, so key:value pairs can be iterated in 
+// Package orderedmap is a Go implementation of Python's OrderedDict class, a map
+// that preserves the order of insertion, so key:value pairs can be iterated in
 // the order they where added.
 // It can also be used as a stack (LIFO) or queue (FIFO).
 package orderedmap
 
 import "fmt"
 
+// OrderedMap class
 type OrderedMap struct {
 	table map[interface{}]*node
 	root  *node
 }
 
-// Create an empty OrderedMap
+// NewOrderedMap creates an empty OrderedMap
 func NewOrderedMap() *OrderedMap {
 	root := newNode(nil, nil, nil, nil) // sentinel Node
 	root.Next, root.Prev = root, root
@@ -23,12 +24,12 @@ func NewOrderedMap() *OrderedMap {
 	return om
 }
 
-// Return the number of elements in the Map
+// Len returns the number of elements in the Map
 func (om *OrderedMap) Len() int {
 	return len(om.table)
 }
 
-// Sets the key value, if the key overwrites an existing entry, the original
+// Set the key value, if the key overwrites an existing entry, the original
 // insertion position is left unchanged, otherwise the key is inserted at the end.
 func (om *OrderedMap) Set(key interface{}, value interface{}) {
 	if node, ok := om.table[key]; !ok {
@@ -46,7 +47,7 @@ func (om *OrderedMap) Set(key interface{}, value interface{}) {
 
 // Get the value of an existing key, leaving the map unchanged
 func (om *OrderedMap) Get(key interface{}) (value interface{}, ok bool) {
-	if node, is_ok := om.table[key]; !is_ok {
+	if node, isOk := om.table[key]; !isOk {
 		value, ok = nil, false
 	} else {
 		value, ok = node.Value, true
@@ -54,7 +55,8 @@ func (om *OrderedMap) Get(key interface{}) (value interface{}, ok bool) {
 	return
 }
 
-// Get the key and value for the last element added, leaving the map unchanged
+// GetLast return the key and value for the last element added, leaving
+// the map unchanged
 func (om *OrderedMap) GetLast() (key interface{}, value interface{}, ok bool) {
 	if len(om.table) == 0 {
 		key, value, ok = nil, nil, false
@@ -65,7 +67,7 @@ func (om *OrderedMap) GetLast() (key interface{}, value interface{}, ok bool) {
 	return
 }
 
-// Get the key value for the beginning element, leaving the map unchanged
+// GetFirst returns the key and value for the first element, leaving the map unchanged
 func (om *OrderedMap) GetFirst() (key interface{}, value interface{}, ok bool) {
 	if len(om.table) == 0 {
 		key, value, ok = nil, nil, false
@@ -100,12 +102,12 @@ func (om *OrderedMap) Pop(last bool) (key interface{}, value interface{}, ok boo
 	return
 }
 
-// Shortcut to Pop the last element
+// PopLast is a shortcut to Pop the last element
 func (om *OrderedMap) PopLast() (key interface{}, value interface{}, ok bool) {
 	return om.Pop(true)
 }
 
-// Shortcut to Pop the first element
+// PopFirst is a shortcut to Pop the first element
 func (om *OrderedMap) PopFirst() (key interface{}, value interface{}, ok bool) {
 	return om.Pop(false)
 }
@@ -116,13 +118,14 @@ func (om *OrderedMap) Move(key interface{}, last bool) (ok bool) {
 	var moved *node
 
 	// Remove from current position
-	if node, ok := om.table[key]; !ok {
+	anode, ok := om.table[key]
+	if !ok {
 		return false
-	} else {
-		node.Next.Prev = node.Prev
-		node.Prev.Next = node.Next
-		moved = node
 	}
+
+	anode.Next.Prev = anode.Prev
+	anode.Prev.Next = anode.Next
+	moved = anode
 
 	// Insert at the start or end
 	root := om.root
@@ -141,24 +144,24 @@ func (om *OrderedMap) Move(key interface{}, last bool) (ok bool) {
 	return true
 }
 
-// Shortcut to Move a key to the end o the map
+// MoveLast is a shortcut to Move a key to the end o the map
 func (om *OrderedMap) MoveLast(key interface{}) (ok bool) {
 	return om.Move(key, true)
 }
 
-// Shortcut to Move a key to the beginning of the map
+// MoveFirst is a shortcut to Move a key to the beginning of the map
 func (om *OrderedMap) MoveFirst(key interface{}) (ok bool) {
 	return om.Move(key, false)
 }
 
-// OrderedMap Iterator
+// MapIterator is a iterator over an OrderedMap
 type MapIterator struct {
 	curr    *node
 	root    *node
 	reverse bool
 }
 
-// Create a map iterator
+// Iter creates a map iterator
 func (om *OrderedMap) Iter() *MapIterator {
 	return &MapIterator{
 		curr:    om.root,
@@ -167,7 +170,7 @@ func (om *OrderedMap) Iter() *MapIterator {
 	}
 }
 
-// Create a reverse order map iterator
+// IterReverse creates a reverse order map iterator
 func (om *OrderedMap) IterReverse() *MapIterator {
 	return &MapIterator{
 		curr:    om.root,
@@ -176,7 +179,7 @@ func (om *OrderedMap) IterReverse() *MapIterator {
 	}
 }
 
-// Return next key:value pair
+// Next key:value pair
 func (mi *MapIterator) Next() (key interface{}, value interface{}, ok bool) {
 
 	// Already finished
@@ -198,11 +201,11 @@ func (mi *MapIterator) Next() (key interface{}, value interface{}, ok bool) {
 	} else {
 		key, value, ok = mi.curr.Key, mi.curr.Value, true
 	}
-	
+
 	return
 }
 
-// Stringer interface
+// String interface
 func (om *OrderedMap) String() string {
 	buffer := make([]string, om.Len())
 
