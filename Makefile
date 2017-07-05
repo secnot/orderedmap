@@ -1,4 +1,4 @@
-all: build install 
+all: build test install 
 
 build:
 		go build
