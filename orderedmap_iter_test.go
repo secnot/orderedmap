@@ -19,21 +19,21 @@ type VisitorFunc func(t *testing.T, om *OrderedMap, iter_num int, key interface{
 // in -> iteration number starting from 0
 func IterVisitor(t *testing.T, om *OrderedMap, visitor VisitorFunc) {
 
-	iter_num := 0
+	iterNum := 0
 	iter := om.Iter()
 	for k, v, ok := iter.Next(); ok; k, v, ok = iter.Next() {
-		visitor(t, om, iter_num, k, v)
-		iter_num++
+		visitor(t, om, iterNum, k, v)
+		iterNum++
 	}
 }
 
 func IterReverseVisitor(t *testing.T, om *OrderedMap, visitor VisitorFunc) {
 
-	iter_num := 0
+	iterNum := 0
 	iter := om.IterReverse()
 	for k, v, ok := iter.Next(); ok; k, v, ok = iter.Next() {
-		visitor(t, om, iter_num, k, v)
-		iter_num++
+		visitor(t, om, iterNum, k, v)
+		iterNum++
 	}
 }
 
@@ -43,7 +43,7 @@ func IterReverseVisitor(t *testing.T, om *OrderedMap, visitor VisitorFunc) {
 // revers -> iterate in reverse
 func ApplyIterFunc(t *testing.T, om *OrderedMap, ifunc VisitorFunc, values []KeyValue, reverse bool) {
 
-	iter_func := func(t *testing.T, om *OrderedMap, iter_num int, key interface{}, value interface{}) {
+	iterFunc := func(t *testing.T, om *OrderedMap, iter_num int, key interface{}, value interface{}) {
 
 		if iter_num >= len(values) {
 			t.Error("Iteration too long")
@@ -60,9 +60,9 @@ func ApplyIterFunc(t *testing.T, om *OrderedMap, ifunc VisitorFunc, values []Key
 		}
 	}
 	if reverse {
-		IterReverseVisitor(t, om, iter_func)
+		IterReverseVisitor(t, om, iterFunc)
 	} else {
-		IterVisitor(t, om, iter_func)
+		IterVisitor(t, om, iterFunc)
 	}
 }
 
@@ -319,16 +319,16 @@ func TestIterInsert(t *testing.T) {
 		om.Set(test.key, test.value)
 	}
 
-	iter_count := 0 // Count iterations to check added/keys are included
+	iterCount := 0 // Count iterations to check added/keys are included
 	iter := om.Iter()
 	for k, _, ok := iter.Next(); ok; k, _, ok = iter.Next() {
 		if k.(int) < len(tests) {
 			om.Set(k.(int)+100, 100)
 		}
-		iter_count++
+		iterCount++
 	}
 
-	if iter_count != 2*len(tests) || iter_count != om.Len() {
+	if iterCount != 2*len(tests) || iterCount != om.Len() {
 		t.Error("Failed adding new keys")
 	}
 
@@ -365,16 +365,16 @@ func TestIterReverseInsert(t *testing.T) {
 		om.Set(test.key, test.value)
 	}
 
-	iter_count := 0 // Count iterations to check added/keys are included
+	iterCount := 0 // Count iterations to check added/keys are included
 	iter := om.IterReverse()
 	for k, _, ok := iter.Next(); ok; k, _, ok = iter.Next() {
 		if k.(int) < len(tests) {
 			om.Set(k.(int)+100, 100)
 		}
-		iter_count++
+		iterCount++
 	}
 
-	if iter_count != len(tests) || om.Len() != 2*len(tests) {
+	if iterCount != len(tests) || om.Len() != 2*len(tests) {
 		t.Error("Failed adding new keys")
 	}
 
@@ -402,7 +402,7 @@ func TestIterDeleteCurrent(t *testing.T) {
 		tests = append(tests, KeyValue{key: k, value: k})
 	}
 
-	for num, _ := range tests {
+	for num := range tests {
 
 		deletef := func(t *testing.T, om *OrderedMap, iter_num int,
 			key interface{}, value interface{}) {
@@ -421,10 +421,10 @@ func TestIterDeleteCurrent(t *testing.T) {
 		ApplyIterFunc(t, om, deletef, tests, false)
 
 		// Check the element was deleted
-		var expected_result []KeyValue
-		expected_result = append(expected_result, tests[:num]...)
-		expected_result = append(expected_result, tests[num+1:]...)
-		ApplyIterFunc(t, om, nil, expected_result, false)
+		var expectedResult []KeyValue
+		expectedResult = append(expectedResult, tests[:num]...)
+		expectedResult = append(expectedResult, tests[num+1:]...)
+		ApplyIterFunc(t, om, nil, expectedResult, false)
 	}
 }
 
@@ -484,20 +484,20 @@ func TestIterDeleteAll(t *testing.T) {
 // Delete random keys while iterating (only one per iteration)
 func TestIterDeleteOneRandom(t *testing.T) {
 	var tests []KeyValue
-	var reversed_tests []KeyValue
+	var reversedTests []KeyValue
 
 	nkeys := 10
 
 	for k := 0; k < nkeys; k++ {
 		tests = append(tests, KeyValue{k, k})
-		reversed_tests = append(reversed_tests, KeyValue{nkeys - 1 - k, nkeys - 1 - k})
+		reversedTests = append(reversedTests, KeyValue{nkeys - 1 - k, nkeys - 1 - k})
 	}
 
 	// Forward Iteration
-	delete_key, pos := 0, 0
+	deleteKey, pos := 0, 0
 
 	for pos = 0; pos < nkeys; pos++ {
-		for delete_key = 0; delete_key < nkeys; delete_key++ {
+		for deleteKey = 0; deleteKey < nkeys; deleteKey++ {
 			// Initialize map with al test elements
 			om := NewOrderedMap()
 			for _, test := range tests {
@@ -505,81 +505,81 @@ func TestIterDeleteOneRandom(t *testing.T) {
 			}
 
 			// delete key at delete_pos
-			deleteFunc := func(t *testing.T, om *OrderedMap, iter_num int,
+			deleteFunc := func(t *testing.T, om *OrderedMap, iterNum int,
 				key interface{}, value interface{}) {
-				if iter_num == pos {
-					om.Delete(delete_key)
+				if iterNum == pos {
+					om.Delete(deleteKey)
 				}
 			}
 
 			// Verify expected key/value pairs during iterarion
-			var iter_keys []KeyValue
-			if delete_key <= pos { // Delete key already visited
-				iter_keys = append(iter_keys, tests[:]...)
+			var iterKeys []KeyValue
+			if deleteKey <= pos { // Delete key already visited
+				iterKeys = append(iterKeys, tests[:]...)
 			} else { // Delete key not yet visited
-				iter_keys = append(iter_keys, tests[:delete_key]...)
-				iter_keys = append(iter_keys, tests[delete_key+1:]...)
+				iterKeys = append(iterKeys, tests[:deleteKey]...)
+				iterKeys = append(iterKeys, tests[deleteKey+1:]...)
 			}
-			ApplyIterFunc(t, om, deleteFunc, iter_keys, false)
+			ApplyIterFunc(t, om, deleteFunc, iterKeys, false)
 
 			// Verify resulting map
-			var expected_result []KeyValue
-			expected_result = append(expected_result, tests[:delete_key]...)
-			expected_result = append(expected_result, tests[delete_key+1:]...)
-			ApplyIterFunc(t, om, nil, expected_result, false)
+			var expectedResult []KeyValue
+			expectedResult = append(expectedResult, tests[:deleteKey]...)
+			expectedResult = append(expectedResult, tests[deleteKey+1:]...)
+			ApplyIterFunc(t, om, nil, expectedResult, false)
 		}
 	}
 
 	// Reverse Iteration
 	for pos = 0; pos < nkeys; pos++ {
-		for delete_key = 0; delete_key < nkeys; delete_key++ {
+		for deleteKey = 0; deleteKey < nkeys; deleteKey++ {
 			// Initialize map with al test elements
 			om := NewOrderedMap()
 			for _, test := range tests {
 				om.Set(test.key, test.value)
 			}
 
-			deleteFunc := func(t *testing.T, om *OrderedMap, iter_num int,
+			deleteFunc := func(t *testing.T, om *OrderedMap, iterNum int,
 				key interface{}, value interface{}) {
 				if key.(int) == pos {
-					om.Delete(delete_key)
+					om.Delete(deleteKey)
 				}
 			}
 
 			// Verify expected key/value pairs during iterarion
-			var iter_keys []KeyValue
-			if delete_key < pos { // Delete key not yet visited
-				iter_keys = append(iter_keys, reversed_tests[:nkeys-1-delete_key]...)
-				iter_keys = append(iter_keys, reversed_tests[nkeys-1-delete_key+1:]...)
+			var iterKeys []KeyValue
+			if deleteKey < pos { // Delete key not yet visited
+				iterKeys = append(iterKeys, reversedTests[:nkeys-1-deleteKey]...)
+				iterKeys = append(iterKeys, reversedTests[nkeys-1-deleteKey+1:]...)
 			} else { // Deleted visited key
-				iter_keys = append(iter_keys, reversed_tests[:]...)
+				iterKeys = append(iterKeys, reversedTests[:]...)
 			}
-			ApplyIterFunc(t, om, deleteFunc, iter_keys, true)
+			ApplyIterFunc(t, om, deleteFunc, iterKeys, true)
 
 			// verify resulting map
-			var expected_result []KeyValue
-			expected_result = append(expected_result, reversed_tests[:nkeys-1-delete_key]...)
-			expected_result = append(expected_result, reversed_tests[nkeys-1-delete_key+1:]...)
-			ApplyIterFunc(t, om, nil, expected_result, true)
+			var expectedResult []KeyValue
+			expectedResult = append(expectedResult, reversedTests[:nkeys-1-deleteKey]...)
+			expectedResult = append(expectedResult, reversedTests[nkeys-1-deleteKey+1:]...)
+			ApplyIterFunc(t, om, nil, expectedResult, true)
 		}
 	}
 }
 
 // Set a new key then delete another (while iterating)
 func TestIterInsertDelete(t *testing.T) {
-	var tests []KeyValue          // Tests for normal Iter
-	var reversed_tests []KeyValue // Tests for IterReverse
+	var tests []KeyValue         // Tests for normal Iter
+	var reversedTests []KeyValue // Tests for IterReverse
 	nkeys := 10
 
 	for k := 0; k < nkeys; k++ {
 		tests = append(tests, KeyValue{k, k})
-		reversed_tests = append(reversed_tests, KeyValue{nkeys - 1 - k, nkeys - 1 - k})
+		reversedTests = append(reversedTests, KeyValue{nkeys - 1 - k, nkeys - 1 - k})
 	}
 
-	pos, delete_key := 0, 0
+	pos, deleteKey := 0, 0
 
 	for pos = 0; pos < nkeys; pos++ {
-		for delete_key = 0; delete_key < nkeys; delete_key++ {
+		for deleteKey = 0; deleteKey < nkeys; deleteKey++ {
 			// Initialize map with al test elements
 			om := NewOrderedMap()
 			for _, test := range tests {
@@ -590,37 +590,37 @@ func TestIterInsertDelete(t *testing.T) {
 				key interface{}, value interface{}) {
 				if iter_num == pos {
 					om.Set(pos+1000, pos+1000)
-					om.Delete(delete_key)
+					om.Delete(deleteKey)
 				}
 			}
 
 			// Because it is iterating from start to finish, it will iterate
 			// over the newly added keys
-			var iter_keys []KeyValue
-			if delete_key <= pos {
-				iter_keys = append(iter_keys, tests[:]...)
+			var iterKeys []KeyValue
+			if deleteKey <= pos {
+				iterKeys = append(iterKeys, tests[:]...)
 			} else {
-				iter_keys = append(iter_keys, tests[:delete_key]...)
-				iter_keys = append(iter_keys, tests[delete_key+1:]...)
+				iterKeys = append(iterKeys, tests[:deleteKey]...)
+				iterKeys = append(iterKeys, tests[deleteKey+1:]...)
 			}
 
-			iter_keys = append(iter_keys, KeyValue{pos + 1000, pos + 1000})
+			iterKeys = append(iterKeys, KeyValue{pos + 1000, pos + 1000})
 
 			// Check all tests are iterated
-			ApplyIterFunc(t, om, deleteFunc, iter_keys, false)
+			ApplyIterFunc(t, om, deleteFunc, iterKeys, false)
 
 			// Check everything went ok
-			var expected_result []KeyValue
-			expected_result = append(expected_result, tests[:delete_key]...)
-			expected_result = append(expected_result, tests[delete_key+1:]...)
-			expected_result = append(expected_result, KeyValue{pos + 1000, pos + 1000})
-			ApplyIterFunc(t, om, nil, expected_result, false)
+			var expectedResult []KeyValue
+			expectedResult = append(expectedResult, tests[:deleteKey]...)
+			expectedResult = append(expectedResult, tests[deleteKey+1:]...)
+			expectedResult = append(expectedResult, KeyValue{pos + 1000, pos + 1000})
+			ApplyIterFunc(t, om, nil, expectedResult, false)
 		}
 	}
 
 	// Test Reverse Iteration
 	for pos = 0; pos < nkeys; pos++ {
-		for delete_key = 0; delete_key < nkeys; delete_key++ {
+		for deleteKey = 0; deleteKey < nkeys; deleteKey++ {
 			// Initialize map with al test elements
 			om := NewOrderedMap()
 			for _, test := range tests {
@@ -631,27 +631,27 @@ func TestIterInsertDelete(t *testing.T) {
 				key interface{}, value interface{}) {
 				if key.(int) == pos {
 					om.Set(pos+1000, pos+1000)
-					om.Delete(delete_key)
+					om.Delete(deleteKey)
 				}
 			}
 			// The inserted keys should not appear during reverse iteration because
 			// they are added at the end of the OrderedMap and it's iterating towards
 			// the start
-			var iter_keys []KeyValue
-			if delete_key < pos { // Delete key not yet visited
-				iter_keys = append(iter_keys, reversed_tests[:nkeys-1-delete_key]...)
-				iter_keys = append(iter_keys, reversed_tests[nkeys-1-delete_key+1:]...)
+			var iterKeys []KeyValue
+			if deleteKey < pos { // Delete key not yet visited
+				iterKeys = append(iterKeys, reversedTests[:nkeys-1-deleteKey]...)
+				iterKeys = append(iterKeys, reversedTests[nkeys-1-deleteKey+1:]...)
 			} else { // Deleted visited key
-				iter_keys = append(iter_keys, reversed_tests[:]...)
+				iterKeys = append(iterKeys, reversedTests[:]...)
 			}
-			ApplyIterFunc(t, om, deleteFunc, iter_keys, true)
+			ApplyIterFunc(t, om, deleteFunc, iterKeys, true)
 
 			// The new keys should appear in the next iteration
-			var expected_result []KeyValue
-			expected_result = append(expected_result, KeyValue{pos + 1000, pos + 1000})
-			expected_result = append(expected_result, reversed_tests[:nkeys-1-delete_key]...)
-			expected_result = append(expected_result, reversed_tests[nkeys-1-delete_key+1:]...)
-			ApplyIterFunc(t, om, nil, expected_result, true)
+			var expectedResult []KeyValue
+			expectedResult = append(expectedResult, KeyValue{pos + 1000, pos + 1000})
+			expectedResult = append(expectedResult, reversedTests[:nkeys-1-deleteKey]...)
+			expectedResult = append(expectedResult, reversedTests[nkeys-1-deleteKey+1:]...)
+			ApplyIterFunc(t, om, nil, expectedResult, true)
 		}
 	}
 
@@ -660,19 +660,19 @@ func TestIterInsertDelete(t *testing.T) {
 // Delete key and then insert a new one (while iterating)
 func TestIterDelteInsert(t *testing.T) {
 	var tests []KeyValue
-	var reversed_tests []KeyValue
+	var reversedTests []KeyValue
 	nkeys := 10
 
 	for k := 0; k < nkeys; k++ {
 		tests = append(tests, KeyValue{k, k})
-		reversed_tests = append(reversed_tests, KeyValue{nkeys - 1 - k, nkeys - 1 - k})
+		reversedTests = append(reversedTests, KeyValue{nkeys - 1 - k, nkeys - 1 - k})
 	}
 
-	pos, delete_key := 0, 0
+	pos, deleteKey := 0, 0
 
 	// Forward
 	for pos = 0; pos < nkeys; pos++ {
-		for delete_key = 0; delete_key < nkeys; delete_key++ {
+		for deleteKey = 0; deleteKey < nkeys; deleteKey++ {
 			// Initialize map with al test elements
 			om := NewOrderedMap()
 			for _, test := range tests {
@@ -682,40 +682,40 @@ func TestIterDelteInsert(t *testing.T) {
 			deleteFunc := func(t *testing.T, om *OrderedMap, iter_num int,
 				key interface{}, value interface{}) {
 				if iter_num == pos {
-					om.Delete(delete_key)
+					om.Delete(deleteKey)
 					om.Set(pos+1000, pos+1000)
 				}
 			}
 
-			var iter_keys []KeyValue
-			if delete_key <= pos {
-				iter_keys = append(iter_keys, tests[:]...)
+			var iterKeys []KeyValue
+			if deleteKey <= pos {
+				iterKeys = append(iterKeys, tests[:]...)
 			} else {
-				iter_keys = append(iter_keys, tests[:delete_key]...)
-				iter_keys = append(iter_keys, tests[delete_key+1:]...)
+				iterKeys = append(iterKeys, tests[:deleteKey]...)
+				iterKeys = append(iterKeys, tests[deleteKey+1:]...)
 			}
 
 			// If the iteration is at its last position and it is removed
 			// the iteration is finished, so the key added after is ignored
-			if !(pos == nkeys-1 && delete_key == pos) {
-				iter_keys = append(iter_keys, KeyValue{pos + 1000, pos + 1000})
+			if !(pos == nkeys-1 && deleteKey == pos) {
+				iterKeys = append(iterKeys, KeyValue{pos + 1000, pos + 1000})
 			}
 
 			// Check all tests are iterated
-			ApplyIterFunc(t, om, deleteFunc, iter_keys, false)
+			ApplyIterFunc(t, om, deleteFunc, iterKeys, false)
 
 			// Check everything went ok
-			var expected_result []KeyValue
-			expected_result = append(expected_result, tests[:delete_key]...)
-			expected_result = append(expected_result, tests[delete_key+1:]...)
-			expected_result = append(expected_result, KeyValue{pos + 1000, pos + 1000})
-			ApplyIterFunc(t, om, nil, expected_result, false)
+			var expectedResult []KeyValue
+			expectedResult = append(expectedResult, tests[:deleteKey]...)
+			expectedResult = append(expectedResult, tests[deleteKey+1:]...)
+			expectedResult = append(expectedResult, KeyValue{pos + 1000, pos + 1000})
+			ApplyIterFunc(t, om, nil, expectedResult, false)
 		}
 	}
 
 	// Test Reverse Iteration
 	for pos = 0; pos < nkeys; pos++ {
-		for delete_key = 0; delete_key < nkeys; delete_key++ {
+		for deleteKey = 0; deleteKey < nkeys; deleteKey++ {
 			// Initialize map with al test elements
 			om := NewOrderedMap()
 			for _, test := range tests {
@@ -725,28 +725,28 @@ func TestIterDelteInsert(t *testing.T) {
 			deleteFunc := func(t *testing.T, om *OrderedMap, iter_num int,
 				key interface{}, value interface{}) {
 				if key.(int) == pos {
-					om.Delete(delete_key)
+					om.Delete(deleteKey)
 					om.Set(pos+1000, pos+1000)
 				}
 			}
 			// The inserted keys should not appear during reverse iteration because
 			// they are added at the end of the OrderedMap and it's iterating towards
 			// the start
-			var iter_keys []KeyValue
-			if delete_key < pos { // Delete key not yet visited
-				iter_keys = append(iter_keys, reversed_tests[:nkeys-1-delete_key]...)
-				iter_keys = append(iter_keys, reversed_tests[nkeys-1-delete_key+1:]...)
+			var iterKeys []KeyValue
+			if deleteKey < pos { // Delete key not yet visited
+				iterKeys = append(iterKeys, reversedTests[:nkeys-1-deleteKey]...)
+				iterKeys = append(iterKeys, reversedTests[nkeys-1-deleteKey+1:]...)
 			} else { // Deleted visited key
-				iter_keys = append(iter_keys, reversed_tests[:]...)
+				iterKeys = append(iterKeys, reversedTests[:]...)
 			}
-			ApplyIterFunc(t, om, deleteFunc, iter_keys, true)
+			ApplyIterFunc(t, om, deleteFunc, iterKeys, true)
 
 			// The new keys should appear in the next iteration
-			var expected_result []KeyValue
-			expected_result = append(expected_result, KeyValue{pos + 1000, pos + 1000})
-			expected_result = append(expected_result, reversed_tests[:nkeys-1-delete_key]...)
-			expected_result = append(expected_result, reversed_tests[nkeys-1-delete_key+1:]...)
-			ApplyIterFunc(t, om, nil, expected_result, true)
+			var expectedResult []KeyValue
+			expectedResult = append(expectedResult, KeyValue{pos + 1000, pos + 1000})
+			expectedResult = append(expectedResult, reversedTests[:nkeys-1-deleteKey]...)
+			expectedResult = append(expectedResult, reversedTests[nkeys-1-deleteKey+1:]...)
+			ApplyIterFunc(t, om, nil, expectedResult, true)
 		}
 	}
 }
