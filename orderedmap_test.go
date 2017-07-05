@@ -235,7 +235,7 @@ func TestLen(t *testing.T) {
 	}
 	om.Pop(true)
 	if l := om.Len(); l != 0 {
-		t.Error("Expection 0, returned ", l)
+		t.Error("Expecting 0, returned ", l)
 	}
 }
 
